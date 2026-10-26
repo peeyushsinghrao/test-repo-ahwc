@@ -36,7 +36,7 @@ let state = {
   // rows: [{lakshya:'', prapti:''}] × 10
   rows: Array.from({length: 10}, () => ({lakshya:'', prapti:''})),
   // karmachari: [{naam,pad,bank_khataa,bank_naam,ifsc,mobile}]
-  karmachari: Array.from({length: 5}, () => ({naam:'',pad:'',bank_khataa:'',bank_naam:'',ifsc:'',mobile:''})),
+  karmachari: Array.from({length: 8}, () => ({naam:'',pad:'',bank_khataa:'',bank_naam:'',ifsc:'',mobile:''})),
 };
 
 /* =========================================================

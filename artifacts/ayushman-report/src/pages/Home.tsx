@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   AlertCircle,
   FileDown,
-  FileSpreadsheet,
   Printer,
   BarChart3,
   Copy,
@@ -31,13 +30,19 @@ interface KarmachariRow {
   mobile: string;
 }
 
+interface AppleToast {
+  type: "error" | "success" | "info";
+  title: string;
+  message?: string;
+}
+
 const KARYA_NAMES = [
   "ओपीडी",
   "प्रकृति परीक्षण",
   "आयुष सुविधा में पेनलबद्ध व्यक्तियों की संख्या",
   "उच्च रक्तचाप हेतु परीक्षित 30 वर्ष से अधिक आयु के व्यक्तियों का अनुपात",
   "मधुमेह हेतु परीक्षित 30 वर्ष से अधिक आयु के व्यक्तियों का अनुपात",
-  "आयुष उपचार पा रहे मधुमेह रोगियों का अनुपात", // Point 6 corrected
+  "आयुष उपचार पा रहे मधुमेह रोगियों का अनुपात",
   "आयुष उपचार पा रहे उच्च रक्तचाप रोगियों का अनुपात",
   "जीवनशैली में परिवर्तन हेतु वर्ष में 06, सात दिवसीय अभियान",
   "परिवारों को वितरित ब्रोशर",
@@ -86,6 +91,9 @@ function getDefaultKarmachari(): KarmachariRow[] {
     { naam: "", pad: "ANM", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
     { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
     { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
   ];
 }
 
@@ -119,7 +127,6 @@ function loadStaffMaster(): KarmachariRow[] {
     }
   } catch { /* ignore */ }
 
-  // Fallback: search previous months for any existing staff
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
@@ -182,15 +189,16 @@ export default function Home() {
   const [karmachariRows, setKarmachariRows] = useState<KarmachariRow[]>(savedMonth.karmachariRows);
 
   const [generating, setGenerating] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
   const [saveMsg, setSaveMsg] = useState("");
   const [showStamp, setShowStamp] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [previewZoom, setPreviewZoom] = useState<"fit" | "100%">("fit");
   const [previewScale, setPreviewScale] = useState(1);
+  const [toast, setToast] = useState<AppleToast | null>(null);
 
   const scalerRef = useRef<HTMLDivElement>(null);
   const saveMsgTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const restoreFileRef = useRef<HTMLInputElement>(null);
 
   // Auto-scale live preview in right column
@@ -217,6 +225,14 @@ export default function Home() {
       window.removeEventListener("resize", calcScale);
     };
   }, [previewZoom]);
+
+  const showToast = (type: "error" | "success" | "info", title: string, message?: string) => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast({ type, title, message });
+    toastTimer.current = setTimeout(() => {
+      setToast(null);
+    }, 3500);
+  };
 
   const showSaved = () => {
     setSaveMsg("डेटा सुरक्षित");
@@ -259,10 +275,11 @@ export default function Home() {
   };
 
   const handleReset = () => {
-    if (!window.confirm(`क्या आप ${maah} ${varsh} के लक्ष्य एवं प्राप्ति का डेटा रीसेट करना चाहते हैं?\n(कर्मचारियों का विवरण सुरक्षित रहेगा)`)) return;
+    if (!window.confirm(`क्या आप ${maah} ${varsh} का सारा डेटा हटाना चाहते हैं?\nयह क्रिया वापस नहीं होगी।`)) return;
+    localStorage.removeItem(monthKey(maah, varsh));
     setRows(getDefaultRows());
-    const masterStaff = loadStaffMaster();
-    setKarmachariRows(masterStaff);
+    setKarmachariRows(getDefaultKarmachari());
+    showToast("info", "डेटा रीसेट पूर्ण", `${maah} ${varsh} का सारा डेटा रीसेट कर दिया गया है।`);
   };
 
   const getSavedMonths = () => {
@@ -311,7 +328,7 @@ export default function Home() {
 
     const validTargets = prevData.rows.some(r => r.lakshya && r.lakshya.trim() !== "");
     if (!validTargets) {
-      alert("पिछले किसी माह में लक्ष्य दर्ज नहीं मिले। कृपया इस माह के लक्ष्य स्वयं दर्ज करें।");
+      showToast("info", "कोई पूर्व लक्ष्य नहीं मिला", "पिछले किसी माह में लक्ष्य दर्ज नहीं मिले। कृपया इस माह के लक्ष्य स्वयं दर्ज करें।");
       return;
     }
 
@@ -320,9 +337,7 @@ export default function Home() {
       lakshya: prevData.rows[idx]?.lakshya || row.lakshya,
     })));
 
-    setSaveMsg(`${foundMonth} से लक्ष्य कॉपी किए गए`);
-    if (saveMsgTimer.current) clearTimeout(saveMsgTimer.current);
-    saveMsgTimer.current = setTimeout(() => setSaveMsg(""), 3000);
+    showToast("success", "लक्ष्य कॉपी हो गए", `${foundMonth} से लक्ष्य मान सफलतापूर्वक कॉपी किए गए।`);
   };
 
   const updateRow = (i: number, field: "lakshya" | "prapti", val: string) => {
@@ -367,17 +382,23 @@ export default function Home() {
   };
 
   const validate = () => {
-    const errs: string[] = [];
-    if (!ahwcName.trim()) errs.push("AHWC का नाम आवश्यक है");
-    if (!jila.trim()) errs.push("जिला आवश्यक है");
-    return errs;
+    const missing: string[] = [];
+    if (!ahwcName.trim()) missing.push("AHWC का नाम आवश्यक है");
+    if (!jila.trim()) missing.push("जिला आवश्यक है");
+    if (missing.length > 0) {
+      showToast(
+        "error",
+        "कृपया आवश्यक विवरण भरें",
+        missing.join("\n")
+      );
+      return false;
+    }
+    return true;
   };
 
-  // Single-page guaranteed PDF export
+  // PDF Export at full standard natural scale
   const handlePDF = async () => {
-    const errs = validate();
-    setErrors(errs);
-    if (errs.length > 0) return;
+    if (!validate()) return;
     setGenerating(true);
     try {
       await new Promise(r => setTimeout(r, 200));
@@ -394,16 +415,10 @@ export default function Home() {
       element.style.marginBottom = "0";
       if (scaler) scaler.style.overflow = "visible";
 
-      // Auto-compact if more than 4 staff to guarantee single A4 page
-      const isCompactNeeded = karmachariRows.length > 4;
-      if (isCompactNeeded) {
-        element.classList.add("doc-compact-mode");
-      }
-
       await new Promise(r => setTimeout(r, 100));
 
       const opt = {
-        margin: isCompactNeeded ? [3, 4, 3, 4] : [4, 4, 4, 4],
+        margin: [4, 4, 4, 4],
         filename: `AHWC_Report_${ahwcName ? ahwcName.replace(/[\s/]/g, "_") + "_" : ""}${maah}_${varsh}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: {
@@ -415,14 +430,11 @@ export default function Home() {
           windowWidth: 794,
         },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        pagebreak: { mode: ["css", "legacy"] },
       };
 
       await html2pdf().set(opt).from(element).save();
 
-      if (isCompactNeeded) {
-        element.classList.remove("doc-compact-mode");
-      }
       element.style.transform = prevTransform;
       element.style.marginBottom = prevMarginBottom;
       if (scaler) scaler.style.overflow = prevScalerOverflow;
@@ -432,81 +444,8 @@ export default function Home() {
   };
 
   const handlePrint = () => {
-    const errs = validate();
-    setErrors(errs);
-    if (errs.length > 0) return;
+    if (!validate()) return;
     window.print();
-  };
-
-  const handleExcel = async () => {
-    const errs = validate();
-    setErrors(errs);
-    if (errs.length > 0) return;
-
-    const XLSX = await import("xlsx");
-    const wb = XLSX.utils.book_new();
-
-    // Table 1 Sheet
-    const t1Header = [
-      [`आयुष्मान आरोग्य मंदिर (AHWC) — मासिक प्रदर्शन रिपोर्ट`],
-      [`AHWC: ${ahwcName}`, `जिला: ${jila}`, `माह: ${maah} ${varsh}`],
-      [],
-      ["क्र.", "कार्य का नाम", "लक्ष्य", "प्राप्ति", "प्रतिशत (%)", "राशि (₹)"],
-    ];
-    const t1Rows = rows.map((row, i) => [
-      i + 1,
-      KARYA_NAMES[i],
-      parseFloat(row.lakshya) || 0,
-      parseFloat(row.prapti) || 0,
-      percentArr[i].toFixed(2) + "%",
-      rashiArr[i],
-    ]);
-    const t1Footer = [
-      [],
-      ["", "", "", "", "प्रदर्शन प्रतिशत:", performancePercent.toFixed(2) + "%"],
-      ["", "", "", "", "कुल राशि (₹):", totalRashi],
-    ];
-    const ws1 = XLSX.utils.aoa_to_sheet([...t1Header, ...t1Rows, ...t1Footer]);
-    ws1["!cols"] = [{ wch: 6 }, { wch: 48 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 15 }];
-    XLSX.utils.book_append_sheet(wb, ws1, "तालिका 1 — प्रदर्शन");
-
-    // Table 2 Sheet (PFMS & Bank Transfer Compliant)
-    const t2Header = [
-      [`तालिका 2 — कर्मचारी भुगतान विवरण (PFMS / बैंक भुगतान प्रारूप)`],
-      [`AHWC: ${ahwcName}`, `जिला: ${jila}`, `माह: ${maah} ${varsh}`, `प्रदर्शन प्रतिशत: ${performancePercent.toFixed(2)}%`],
-      [],
-      ["क्र.", "कर्मचारी का नाम", "पद", "बैंक खाता संख्या", "बैंक का नाम", "IFSC कोड", "मोबाइल नंबर", "भुगतान राशि (₹)"],
-    ];
-    const t2Rows = karmachariRows.map((row, i) => [
-      i + 1,
-      row.naam || "",
-      row.pad || "",
-      { t: "s", v: String(row.bank_khataa || "").trim() },
-      row.bank_naam || "",
-      { t: "s", v: String(row.ifsc || "").trim().toUpperCase() },
-      { t: "s", v: String(row.mobile || "").trim() },
-      getPayment(row.pad),
-    ]);
-    const totalPay = karmachariRows.reduce((s, r) => s + getPayment(r.pad), 0);
-    const t2Footer = [
-      [],
-      ["", "", "", "", "", "", "कुल भुगतान (₹):", totalPay],
-    ];
-    const ws2 = XLSX.utils.aoa_to_sheet([...t2Header, ...t2Rows, ...t2Footer]);
-    ws2["!cols"] = [
-      { wch: 6 },
-      { wch: 25 },
-      { wch: 16 },
-      { wch: 22 },
-      { wch: 22 },
-      { wch: 15 },
-      { wch: 15 },
-      { wch: 16 },
-    ];
-    XLSX.utils.book_append_sheet(wb, ws2, "तालिका 2 — बैंक भुगतान");
-
-    const safeName = ahwcName ? ahwcName.replace(/[^a-zA-Z0-9_\u0900-\u097F]/g, "_") + "_" : "";
-    XLSX.writeFile(wb, `AHWC_Report_${safeName}${maah}_${varsh}.xlsx`);
   };
 
   // Backup & Restore
@@ -529,6 +468,7 @@ export default function Home() {
     a.download = `AHWC_Backup_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    showToast("success", "बैकअप डाउनलोड हुआ", "आपका बैकअप सुरक्षित डाउनलोड हो गया है।");
   };
 
   const handleRestore = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -545,10 +485,10 @@ export default function Home() {
             localStorage.setItem(k, val);
           }
         });
-        alert("डेटा सफलतापूर्वक रीस्टोर हो गया! पेज रिफ्रेश हो रहा है...");
-        window.location.reload();
+        showToast("success", "डेटा रीस्टोर पूर्ण", "डेटा सफलतापूर्वक रीस्टोर हो गया। पेज रीलोड हो रहा है...");
+        setTimeout(() => window.location.reload(), 1200);
       } catch (err) {
-        alert("बैकअप फ़ाइल लोड करने में त्रुटि। कृपया सही JSON फ़ाइल चुनें।");
+        showToast("error", "रीस्टोर विफल", "बैकअप फ़ाइल लोड करने में त्रुटि। कृपया सही JSON फ़ाइल चुनें।");
       }
     };
     reader.readAsText(file);
@@ -562,6 +502,26 @@ export default function Home() {
           <div className="overlay-box">
             <div className="spin" />
             PDF तैयार हो रहा है...
+          </div>
+        </div>
+      )}
+
+      {/* Apple-style Light Frosted Glass Notification Toast */}
+      {toast && (
+        <div className="apple-toast-container">
+          <div className={`apple-toast apple-toast-${toast.type}`} onClick={() => setToast(null)}>
+            <div className="apple-toast-icon">
+              {toast.type === "error" && <AlertCircle size={20} className="icon-error" />}
+              {toast.type === "success" && <CheckCircle2 size={20} className="icon-success" />}
+              {toast.type === "info" && <Info size={20} className="icon-info-toast" />}
+            </div>
+            <div className="apple-toast-body">
+              <div className="apple-toast-title">{toast.title}</div>
+              {toast.message && <div className="apple-toast-message">{toast.message}</div>}
+            </div>
+            <button className="apple-toast-close" onClick={() => setToast(null)} aria-label="बंद करें">
+              <X size={15} />
+            </button>
           </div>
         </div>
       )}
@@ -669,36 +629,12 @@ export default function Home() {
         </div>
 
         <div className="form-inner">
-          {errors.length > 0 && (
-            <div className="err-box">
-              {errors.map((e, i) => (
-                <div key={i} className="err-item">
-                  <AlertCircle size={15} />
-                  <span>{e}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Quick Action Bar (Top) */}
+          {/* Top Summary Bar */}
           <div className="top-action-bar">
             <div className="quick-summary">
               <span>प्रदर्शन: <strong>{performancePercent.toFixed(2)}%</strong></span>
               <span>कुल प्रोत्साहन राशि: <strong>₹{totalRashi.toLocaleString("en-IN")}</strong></span>
-            </div>
-            <div className="quick-buttons">
-              <button className="btn-pdf-sm" onClick={handlePDF}>
-                <FileDown size={14} />
-                <span>PDF</span>
-              </button>
-              <button className="btn-excel-sm" onClick={handleExcel}>
-                <FileSpreadsheet size={14} />
-                <span>Excel</span>
-              </button>
-              <button className="btn-print-sm" onClick={handlePrint}>
-                <Printer size={14} />
-                <span>Print</span>
-              </button>
+              <span>कुल कर्मचारी भुगतान: <strong>₹{karmachariRows.reduce((s, r) => s + getPayment(r.pad), 0).toLocaleString("en-IN")}</strong></span>
             </div>
           </div>
 
@@ -936,15 +872,11 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Action Button Row */}
+          {/* Unified Action Button Row (Bottom Only) */}
           <div className="gen-btn-row">
             <button className="btn-pdf" onClick={handlePDF}>
               <FileDown size={17} />
               <span>PDF डाउनलोड</span>
-            </button>
-            <button className="btn-excel" onClick={handleExcel}>
-              <FileSpreadsheet size={17} />
-              <span>Excel डाउनलोड</span>
             </button>
             <button className="btn-print" onClick={handlePrint}>
               <Printer size={17} />
@@ -954,7 +886,7 @@ export default function Home() {
               {showStamp ? <X size={16} /> : <Stamp size={16} />}
               <span>{showStamp ? "स्टाम्प हटाएं" : "मुहर / स्टाम्प बॉक्स"}</span>
             </button>
-            <button className="btn-reset" onClick={handleReset} title="इस माह का डेटा रीसेट करें">
+            <button className="btn-reset" onClick={handleReset} title="इस माह का सारा डेटा रीसेट करें">
               <RotateCcw size={16} />
               <span>Reset</span>
             </button>
