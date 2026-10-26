@@ -81,7 +81,7 @@ function inr(n) {
    ========================================================= */
 function padOptions(selected) {
   const opts = ['','AMO','ANM','ASHA','नर्स/कम्पा'];
-  const labels = {'':'-- चुनें --','AMO':'AMO','ANM':'ANM','ASHA':'ASHA','नर्स/कम्पा':'नर्स/कम्पा'};
+  const labels = {'':'चुनें','AMO':'AMO','ANM':'ANM','ASHA':'ASHA','नर्स/कम्पा':'नर्स/कम्पा'};
   return opts.map(v =>
     `<option value="${v}"${v === selected ? ' selected' : ''}>${labels[v]}</option>`
   ).join('');

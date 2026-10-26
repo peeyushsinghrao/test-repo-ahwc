@@ -86,14 +86,14 @@ function getDefaultRows(): { lakshya: string; prapti: string }[] {
 
 function getDefaultKarmachari(): KarmachariRow[] {
   return [
-    { naam: "", pad: "AMO", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
-    { naam: "", pad: "नर्स/कम्पा", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
-    { naam: "", pad: "ANM", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
-    { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
-    { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
-    { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
-    { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
-    { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
+    { naam: "", pad: "", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" },
   ];
 }
 
@@ -355,7 +355,7 @@ export default function Home() {
 
   const addKarmaRow = () => {
     setKarmachariRows(r => {
-      const updated = [...r, { naam: "", pad: "ASHA", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" }];
+      const updated = [...r, { naam: "", pad: "", bank_khataa: "", bank_naam: "", ifsc: "", mobile: "" }];
       saveStaffMaster(updated);
       return updated;
     });
@@ -791,7 +791,7 @@ export default function Home() {
                       </td>
                       <td>
                         <select value={row.pad} onChange={e => updateKarmachari(i, "pad", e.target.value)}>
-                          <option value="">-- चुनें --</option>
+                          <option value="">चुनें</option>
                           <option value="AMO">AMO</option>
                           <option value="ANM">ANM</option>
                           <option value="ASHA">ASHA</option>
@@ -1003,7 +1003,7 @@ export default function Home() {
                   <tr key={i}>
                     <td style={{ textAlign: "center" }}>{i + 1}</td>
                     <td style={{ textAlign: "left" }}>{row.naam || "________________"}</td>
-                    <td style={{ textAlign: "center", fontWeight: 600 }}>{row.pad}</td>
+                    <td style={{ textAlign: "center", fontWeight: 600 }}>{row.pad || "—"}</td>
                     <td style={{ textAlign: "center" }}>{row.bank_khataa || "____________"}</td>
                     <td style={{ textAlign: "left" }}>{row.bank_naam || "____________"}</td>
                     <td style={{ textAlign: "center" }}>{row.ifsc || "________"}</td>
