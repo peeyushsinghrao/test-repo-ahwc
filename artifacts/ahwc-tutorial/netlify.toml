@@ -1,0 +1,8 @@
+[build]
+  publish = "artifacts/ahwc-tutorial/dist/public"
+
+# Serve index.html for client-side routes handled by React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
