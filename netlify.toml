@@ -1,0 +1,14 @@
+[build]
+  command = "pnpm --filter @workspace/ayushman-report run build"
+  publish = "artifacts/ayushman-report/dist"
+
+[build.environment]
+  PORT = "3000"
+  BASE_PATH = "/"
+  NODE_VERSION = "20"
+  PNPM_FLAGS = "--no-frozen-lockfile"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
