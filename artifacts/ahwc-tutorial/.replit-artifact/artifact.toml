@@ -1,0 +1,31 @@
+kind = "slides"
+previewPath = "/ahwc-tutorial/"
+title = "AHWC PLP रिपोर्ट - उपयोग गाइड"
+version = "1.0.0"
+id = "artifacts/ahwc-tutorial"
+router = "path"
+
+[[integratedSkills]]
+name = "slides"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/ahwc-tutorial/" ]
+localPort = 22633
+
+[services.development]
+run = "pnpm --filter @workspace/ahwc-tutorial run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ahwc-tutorial", "run", "build" ]
+publicDir = "artifacts/ahwc-tutorial/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22633"
+BASE_PATH = "/ahwc-tutorial/"

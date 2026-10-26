@@ -1,0 +1,58 @@
+[
+  {
+    "id": "a1b2c3d4-0001-4e5f-8a9b-c0d1e2f30001",
+    "position": 1,
+    "filepath": "src/pages/slides/Slide1Title.tsx",
+    "title": "AHWC PLP रिपोर्ट ऐप — कैसे उपयोग करें?",
+    "description": "टाइटल स्लाइड — ऐप का परिचय",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-0002-4e5f-8a9b-c0d1e2f30002",
+    "position": 2,
+    "filepath": "src/pages/slides/Slide2Overview.tsx",
+    "title": "ऐप क्या करता है — पूरा प्रवाह एक नज़र में",
+    "description": "4 चरणों में पूरी रिपोर्ट बनाने का ओवरव्यू",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-0003-4e5f-8a9b-c0d1e2f30003",
+    "position": 3,
+    "filepath": "src/pages/slides/Slide3BasicInfo.tsx",
+    "title": "चरण 1 — मूल जानकारी भरें",
+    "description": "AHWC नाम, जिला, माह और वर्ष दर्ज करने का तरीका",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-0004-4e5f-8a9b-c0d1e2f30004",
+    "position": 4,
+    "filepath": "src/pages/slides/Slide4Table1.tsx",
+    "title": "चरण 2 — तालिका 1: लक्ष्य और प्राप्ति",
+    "description": "10 कार्य संकेतकों में डेटा भरना और राशि गणना नियम",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-0005-4e5f-8a9b-c0d1e2f30005",
+    "position": 5,
+    "filepath": "src/pages/slides/Slide5Table2.tsx",
+    "title": "चरण 3 — तालिका 2: कर्मचारी भुगतान विवरण",
+    "description": "कर्मचारी का नाम, पद, प्राप्ति% और भुगतान गणना",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-0006-4e5f-8a9b-c0d1e2f30006",
+    "position": 6,
+    "filepath": "src/pages/slides/Slide6Download.tsx",
+    "title": "चरण 4 — PDF डाउनलोड और जमा करें",
+    "description": "PDF बनाने की पूरी प्रक्रिया और फ़ाइल की सामग्री",
+    "speakerNotes": ""
+  },
+  {
+    "id": "a1b2c3d4-0007-4e5f-8a9b-c0d1e2f30007",
+    "position": 7,
+    "filepath": "src/pages/slides/Slide7Closing.tsx",
+    "title": "सामान्य प्रश्न (FAQ) और सारांश",
+    "description": "अक्सर पूछे जाने वाले प्रश्न और समापन",
+    "speakerNotes": ""
+  }
+]

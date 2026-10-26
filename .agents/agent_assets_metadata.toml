@@ -1,0 +1,20 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "w0s-Hq1d0OAGUcb1Q4JVj"
+uri = "file://AHWC_PLP_Report_App.zip"
+type = "unspecified"
+title = "AHWC_PLP_Report_App.zip — index.html + style.css + script.js"
+
+[[outputs]]
+id = "B_8uH8GL_3PW3Nzdxfvae"
+uri = "file://ayushman-report-dist.zip"
+type = "unspecified"
+title = "ayushman-report-dist.zip — ready-to-deploy dist/ folder (6 files, ~1.25 MB)"
+
+[[outputs]]
+id = "GoqnegT5yG1Ei1h4W0drm"
+uri = "file://.local/outputs/Kunalsingh.pdf"
+type = "pdf"
+title = "Kunalsingh.pdf"
