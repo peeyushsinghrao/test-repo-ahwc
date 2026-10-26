@@ -1,0 +1,17 @@
+{
+  "name": "आयुष्मान आरोग्य मंदिर — मासिक रिपोर्ट",
+  "short_name": "AHWC रिपोर्ट",
+  "description": "आयुष्मान आरोग्य मंदिर मासिक कार्य निष्पादन एवं प्रोत्साहन राशि गणना रिपोर्ट जनरेटर",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2d6a4f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

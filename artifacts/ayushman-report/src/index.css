@@ -1195,11 +1195,22 @@ html, body {
    PRINT MEDIA RULES
    ============================ */
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
   .no-print {
     display: none !important;
   }
-  body {
+  html, body {
     background: #ffffff !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .desktop-two-col {
+    display: block !important;
   }
   .outer-wrap {
     display: block !important;
@@ -1207,11 +1218,13 @@ html, body {
     margin: 0 !important;
     max-width: 100% !important;
   }
-  .preview-wrap {
+  .preview-wrap, .preview-panel {
     box-shadow: none !important;
     border: none !important;
     position: static !important;
     max-height: unset !important;
+    width: 100% !important;
+    max-width: 100% !important;
     overflow: visible !important;
   }
   .a4-scaler {
@@ -1222,12 +1235,34 @@ html, body {
   }
   .doc-page {
     transform: none !important;
-    margin-bottom: 0 !important;
+    margin: 0 auto !important;
     border: none !important;
     width: 100% !important;
     min-height: unset !important;
     padding: 8mm 10mm !important;
     box-shadow: none !important;
+  }
+  .doc-tbl tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .doc-tbl thead {
+    display: table-header-group !important;
+  }
+  .doc-tbl tfoot {
+    display: table-footer-group !important;
+  }
+  .doc-cert {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .doc-sig-box {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .doc-stamp-box {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
   @page {
     size: A4 portrait;
